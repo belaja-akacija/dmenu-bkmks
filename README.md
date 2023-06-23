@@ -39,7 +39,7 @@ delete an entry
 
 show all bookmarks and go to link in prefered browser
 
-`bkmks`
+`bkmks [ls]`
 
 Configuration is done by directly editing the script.
 

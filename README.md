@@ -27,6 +27,18 @@ To uninstall, run:
 
 `make uninstall`
 
+### Installing Pre-release Binary
+Download the pre-release binary.
+Go to the directory where you saved the tar.gz file, then,
+run:
+
+`tar -xvf bkmks.tar.gz && mv bkmks ~/.local/bin/`
+
+to install the binary.
+
+Make sure you have `~/.local/bin/` in your `$PATH` variable in order for dmenu to find it.
+
+
 ## Usage
 
 add a new bookmark

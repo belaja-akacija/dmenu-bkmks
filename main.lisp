@@ -10,18 +10,20 @@
 
 (defun show-usage ()
   (show-dialog (format nil "
-                       bkms: unix bookmark management that sucks less. Lisp edition!
-                       usage:
-                       bkmks help
-                       show this help message
-                       bkmks add <url>
-                       add a new bookmark
-                       bkmks ls
-                       show all bookmarks
+bkms: unix bookmark management that sucks less. Lisp edition!
+       usage:
+         bkmks h[elp]
+           show this help message
+         bkmks a[dd] <url>
+           add a new bookmark
+         bkmks d[el] <selected entry>
+           delete an entry
+         bkmks [ls]
+           show all bookmarks and go to link in prefered browser
 
-                       Configuration is done by directly editing the script.
+           Configuration is done by directly editing the script.
 
-                       If you would prefer to have your bookmarks stored in an alternate locatation, there are also variables that can be changed for that. The default is /home/user/.bkmks/urls~%")))
+           If you would prefer to have your bookmarks stored in an alternate locatation, there are also variables that can be changed for that. The default is /home/user/.bkmks/urls~%")))
 
 (defun bkmks-check ()
   (ensure-directories-exist *url-file-path*)

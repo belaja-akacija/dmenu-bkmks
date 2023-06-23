@@ -57,3 +57,21 @@ Configuration is done by directly editing the script.
 
 If you would prefer to have your bookmarks stored in an alternate locatation, there are variables that can be changed for that. The default is `/home/user/.bkmks/urls`
 
+
+## Tips
+
+If you use dwm or another tiling window manager, you might want to set a keybinding to execute `bkmks` to more conveniently access your bookmarks.
+
+Here is what I have in my `config.def.h` for dwm:
+```
+static const char *bkmksls[]  = { "bkmks", NULL };
+
+static Key keys[] = {
+// ...
+	{ MODKEY|ShiftMask,             XK_b,      spawn,          {.v = bkmksls } },
+
+//..
+}
+
+```
+

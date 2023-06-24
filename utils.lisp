@@ -34,3 +34,10 @@
                           :if-exists :append :if-does-not-exist :create)
     (format output "~A | ~A~%" desc url )))
 
+(defun get-directory-files (lst)
+         (mapcar #'pathname-name lst))
+
+(defun index-of (lst ele i)
+  (cond ((null lst) nil)
+        ((equal (car lst) ele) i)
+        ((index-of (cdr lst) ele (1+ i)))))

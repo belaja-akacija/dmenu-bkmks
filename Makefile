@@ -4,6 +4,14 @@ ASD_PATH := $(shell pwd)/$(ASD)
 BINARY := bkmks
 INSTALL_PATH := ~/.local/bin
 
+load:
+	rlwrap -c $(LISP) --eval "(asdf:load-asd #P\"$(ASD_PATH)\")" \
+		--eval '(ql:quickload :bkmks)' \
+
+load-test:
+	rlwrap -c $(LISP) --eval "(asdf:load-asd #P\"$(ASD_PATH)\")" \
+		--eval '(ql:quickload :bkmks/tests)' \
+
 build:
 	$(LISP) --eval "(asdf:load-asd #P\"$(ASD_PATH)\")" \
 		--eval '(ql:quickload :bkmks)' \

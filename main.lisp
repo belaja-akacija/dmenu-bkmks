@@ -3,10 +3,12 @@
 ;;; TODO
 ;;; - Fix the need to put double quotes for certain links, when adding new entries
 
-(defparameter *browser* "firefox") ;; think about using xdg-open instead
-(defparameter *url-file-path* #P "~/Documents/.bkmks/")
-(defparameter *url-file-name* "urls")
-(defparameter *url-full-path* (merge-pathnames *url-file-path* (pathname *url-file-name*)))
+(defparameter *config* (load-config *config-path*))
+(defparameter *browser* (getf *config* 'browser))
+(defparameter *preferred-menu* (getf *config* 'menu))
+(defparameter *files* (getf *config* 'files))
+(defparameter *file-state* (getf *config* 'current-file))
+(defparameter *current-file* (nth *file-state* *files*))
 
 (defun show-usage ()
   (show-dialog (format nil "
@@ -27,7 +29,7 @@ bkms: unix bookmark management that sucks less. Lisp edition!
 
 (defun bkmks-check ()
   (ensure-directories-exist *url-file-path*)
-  (cond ((null (probe-file *url-full-path*))
+  (cond ((null (probe-file *current-file*))
          (show-dialog (format nil "Error: No bookmarks found to display. Try adding some!~%~%")))
         (t (format nil "Everything OK."))))
 
@@ -35,12 +37,12 @@ bkms: unix bookmark management that sucks less. Lisp edition!
   ;; This is currently seeming quite messy and bulky
   (bkmks-check)
   (let ((bkmks-length  (string-trim `(#\NewLine) (uiop:run-program `("wc" "-l")
-                                                                   :input *url-full-path*
+                                                                   :input *current-file*
                                                                    :output :string)))
         (raw-entry "")
         (filtered-entry ""))
     (setq raw-entry (uiop:run-program `("dmenu" "-l", bkmks-length)
-                                      :input *url-full-path*
+                                      :input *current-file*
                                       :output :string))
     (setq filtered-entry (cl-ppcre:scan-to-strings "(?<=\\|\\s).\+" (string-trim '(#\NewLine) raw-entry)))
     `(,filtered-entry ,(string-trim '(#\NewLine) raw-entry))))
@@ -52,13 +54,13 @@ bkms: unix bookmark management that sucks less. Lisp edition!
         (progn
           (setq desc (uiop:run-program `("dmenu" "-l" "6" "-p" "Description: ") :output :string))
           (print desc)
-          (append->file (nth 2 sb-ext:*posix-argv*) (string-trim '(#\NewLine) desc) *url-full-path*)))))
+          (append->file (nth 2 sb-ext:*posix-argv*) (string-trim '(#\NewLine) desc) *current-file*)))))
 
 (defun bkmks-del ()
   (bkmks-check)
   (let* ((entry (nth 1 (bkmks-display)))
-        (removed-lines (remove-lines *url-full-path* entry)))
-    (overwrite-urls! *url-full-path* removed-lines)))
+        (removed-lines (remove-lines *current-file* entry)))
+    (overwrite-file! *current-file* removed-lines)))
 
 (defun bkmks-send ()
   (let ((entry (nth 0 (bkmks-display))))

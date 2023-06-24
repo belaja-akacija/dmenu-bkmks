@@ -9,11 +9,14 @@
       do (setf filtered-lines (concatenate 'string filtered-lines line (string #\NewLine)))))
     filtered-lines))
 
-(defun overwrite-urls! (file removed-lines)
+(defun overwrite-file! (file removed-lines &key (type :human))
   (with-open-file (in file
                       :direction :output
-                      :if-exists :supersede) ; overwrite file
-    (format in "~A" removed-lines)))
+                      :if-exists :supersede
+                      :if-does-not-exist :create) ; overwrite file
+    (if (equal type :data)
+    (format in "~s" removed-lines)
+    (format in "~A" removed-lines))))
 
 (defun show-dialog (dialog &key (justify "left"))
   (let* ((justification (format nil "--justify=~A" justify))

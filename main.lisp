@@ -65,6 +65,7 @@ bkms: unix bookmark management that sucks less. Lisp edition!
     (overwrite-file! *current-file* removed-lines)))
 
 (defun bkmks-change ()
+  (update-config)
   (let* ((files (get-directory-files *url-file-path-list*))
         (files-length (string (digit-char (length files))))
         (tmp #P "/tmp/bkmks-change.tmp")
@@ -86,6 +87,7 @@ bkms: unix bookmark management that sucks less. Lisp edition!
   (uiop:run-program `(,*browser* ,entry))))
 
 (defun main ()
+  (update-config)
   (cond ((not (null (find (nth 1 sb-ext:*posix-argv*) '("add" "a") :test #'string-equal)))
          (bkmks-add))
         ((not (null (find (nth 1 sb-ext:*posix-argv*) '("del" "d") :test #'string-equal)))

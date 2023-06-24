@@ -8,7 +8,7 @@
 (defun load-config (file)
   (ensure-directories-exist file)
   (if (probe-file file)
-       (modest-config:load-config file)
+         (modest-config:load-config file)
       (overwrite-file! file ;; quietly fail by creating a new config and set the defaults
                        (set-default-config)
                        :type :data)))
@@ -22,6 +22,7 @@
   (list 'menu "dmenu" 'browser "firefox" 'files `(,*url-full-path*) 'current-file 0))
 
 (defun update-config ()
+(setf *url-file-path-list*  (directory (merge-pathnames *url-file-path* "*")))
 (setf *config* (load-config *config-path*))
 (setf *browser* (getf *config* 'browser))
 (setf *preferred-menu* (getf *config* 'menu))

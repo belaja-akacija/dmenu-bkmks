@@ -1,6 +1,6 @@
 (defsystem "bkmks"
   :description "bkms: unix bookmark management that sucks less. Lisp edition!"
-  :version "0.5.1"
+  :version "0.5.2"
   :author "belaja-akacija"
   :depends-on ("cl-ppcre" "modest-config")
   :components ((:file "utils")

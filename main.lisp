@@ -10,6 +10,7 @@
 (defparameter *file-state* (getf *config* 'current-file))
 (defparameter *current-file* (nth *file-state* *files*))
 
+;; TODO update the help
 (defun show-usage ()
   (show-dialog (format nil "
 bkms: unix bookmark management that sucks less. Lisp edition!
@@ -33,29 +34,36 @@ bkms: unix bookmark management that sucks less. Lisp edition!
          (show-dialog (format nil "Error: No bookmarks found to display. Try adding some!~%~%")))
         (t (format nil "Everything OK."))))
 
-(defun bkmks-display ()
+(defun bkmks-get-categories ()
   (update-config)
+  (let* ((files (get-directory-files *url-file-path-list*))
+         (files-length (format nil "~s" (length *url-file-path-list*)))
+         (tmp #P "/tmp/bkmks-change.tmp")
+         (raw-entry "")
+         (filtered-entry ""))
+    (overwrite-file! tmp (format nil "~{~A~%~}" files))
+    (setq raw-entry (launch-dmenu files-length tmp))
+    (setq filtered-entry (merge-pathnames *url-file-path* (pathname raw-entry)))
+    `(,filtered-entry ,raw-entry)))
+
+
+(defun bkmks-display ()
   ;; This is currently seeming quite messy and bulky
-  ;(bkmks-check)
-  (let ((bkmks-length  (string-trim `(#\NewLine) (uiop:run-program `("wc" "-l")
-                                                                   :input *current-file*
-                                                                   :output :string)))
+  (bkmks-check)
+  (let ((bkmks-length  (get-file-lines *current-file*))
         (raw-entry "")
         (filtered-entry ""))
-    (setq raw-entry (uiop:run-program `("dmenu" "-l", bkmks-length)
-                                      :input *current-file*
-                                      :output :string))
+    (setq raw-entry (launch-dmenu bkmks-length *current-file*))
+    (format nil "~a" bkmks-length)
     (setq filtered-entry (cl-ppcre:scan-to-strings "(?<=\\|\\s).\+" (string-trim '(#\NewLine) raw-entry)))
     `(,filtered-entry ,(string-trim '(#\NewLine) raw-entry))))
 
 (defun bkmks-add ()
-  (update-config)
   (let ((desc ""))
     (if (null (nth 2 sb-ext:*posix-argv*))
         (show-dialog (format nil "Error: url must be provided.~%~%") :justify "center")
         (progn
-          (setq desc (uiop:run-program `("dmenu" "-l" "6" "-p" "Description: ") :output :string))
-          ;(print desc)
+          (setq desc (launch-dmenu-prompt "Description: "))
           (append->file (nth 2 sb-ext:*posix-argv*) (string-trim '(#\NewLine) desc) *current-file*)))))
 
 (defun bkmks-del ()
@@ -65,29 +73,34 @@ bkms: unix bookmark management that sucks less. Lisp edition!
     (overwrite-file! *current-file* removed-lines)))
 
 (defun bkmks-change ()
-  (update-config)
-  (let* ((files (get-directory-files *url-file-path-list*))
-        (files-length (string (digit-char (length files))))
-        (tmp #P "/tmp/bkmks-change.tmp")
-        (raw-entry "")
-        (filtered-entry ""))
-    (overwrite-file! tmp (format nil "~{~A~%~}" files))
-    (set-config! *config* 'files *url-file-path-list*)
-    (update-config)
-    (setq raw-entry (uiop:run-program `("dmenu" "-l" ,files-length)
-                            :input tmp
-                            :output :string))
-    (setq filtered-entry (merge-pathnames (uiop:merge-pathnames* *url-file-path*) (pathname (string-trim '(#\NewLine) raw-entry))))
-    (set-config! *config* 'current-file (index-of *url-file-path-list* filtered-entry 0))
-    (update-config)
-    ))
+  (let ((category (nth 0 (bkmks-get-categories))))
+    (set-config! *config* 'current-file (index-of *url-file-path-list* category 0))))
+
+(defun bkmks-del-category ()
+  (let* ((category (nth 0 (bkmks-get-categories)))
+        (index (getf *config* 'current-file))
+        (prompt (string-downcase (launch-dmenu-prompt "Are you sure? (y/N): "))))
+    (if (null (find prompt '("y" "yes") :test #'string-equal))
+        nil
+        (progn
+          (set-config! *config* 'current-file (if (equal index 0) 0
+                                                  (1- index)))
+          (delete-file category)))
+    (update-config)))
+
+(defun bkmks-add-category ()
+  (let* ((category-name (launch-dmenu-prompt "Enter category name: "))
+         (category-file (merge-pathnames *url-file-path* (pathname category-name))))
+    (if (probe-file category-file)
+        (show-dialog (format nil "This category already exists."))
+        (overwrite-file! category-file ""))
+    (update-config)))
 
 (defun bkmks-send ()
   (let ((entry (nth 0 (bkmks-display))))
-  (uiop:run-program `(,*browser* ,entry))))
+    (uiop:run-program `(,*browser* ,entry))))
 
 (defun main ()
-  (update-config)
   (cond ((not (null (find (nth 1 sb-ext:*posix-argv*) '("add" "a") :test #'string-equal)))
          (bkmks-add))
         ((not (null (find (nth 1 sb-ext:*posix-argv*) '("del" "d") :test #'string-equal)))

@@ -49,8 +49,8 @@
            do (setf lngth (1+ lngth))))
     (format nil "~s" lngth)))
 
-(defun launch-dmenu (lngth file)
-  (string-trim '(#\NewLine) (uiop:run-program `("dmenu" "-l" ,lngth)
+(defun launch-dmenu (lngth file &optional label)
+  (string-trim '(#\NewLine) (uiop:run-program `("dmenu" "-l" ,lngth "-p" ,label)
                      :input file
                      :output :string)))
 

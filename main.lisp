@@ -55,7 +55,7 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
         (raw-entry "")
         (filtered-entry "")
         (current-file (pathname-name *current-file*)))
-    (setq raw-entry (launch-dmenu bkmks-length *current-file*))
+    (setq raw-entry (launch-dmenu bkmks-length *current-file* current-file))
     (setq filtered-entry (cl-ppcre:scan-to-strings "(?<=\\|\\s).\+" (string-trim '(#\NewLine) raw-entry)))
     `(,filtered-entry ,(string-trim '(#\NewLine) raw-entry))))
 

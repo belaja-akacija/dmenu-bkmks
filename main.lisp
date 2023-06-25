@@ -78,7 +78,8 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
  (defun bkmks-change ()
   (update-config)
   (let ((category (nth 0 (bkmks-get-categories))))
-    (set-config! *config* 'current-file (index-of *url-file-path-list* category 0))))
+    (set-config! *config* 'current-file (index-of *url-file-path-list* category 0))
+    (bkmks-send)))
 
 (defun bkmks-send ()
   (let ((entry (nth 0 (bkmks-display))))

@@ -41,8 +41,9 @@ bkms: unix bookmark management that sucks less. Lisp edition!
                                                                    :input *current-file*
                                                                    :output :string)))
         (raw-entry "")
-        (filtered-entry ""))
-    (setq raw-entry (uiop:run-program `("dmenu" "-l", bkmks-length)
+        (filtered-entry "")
+        (current-file (pathname-name *current-file*)))
+    (setq raw-entry (uiop:run-program `("dmenu" "-l" ,bkmks-length "-p" ,current-file)
                                       :input *current-file*
                                       :output :string))
     (setq filtered-entry (cl-ppcre:scan-to-strings "(?<=\\|\\s).\+" (string-trim '(#\NewLine) raw-entry)))

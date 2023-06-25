@@ -4,9 +4,9 @@ _A simple dmenu script that helps you manage your bookmarks in a way that sucks 
 ## Installation
 ### Dependencies:
 - [dmenu](https://tools.suckless.org/dmenu/) -- (Dynamic menu for X)
-- [SBCL](https://www.sbcl.org/platform-table.html) -- (Common Lisp implementation)
-- [Quicklisp](https://www.quicklisp.org/beta/) -- (A library manager for Common Lisp)
 - [yad](https://github.com/v1cont/yad) -- (Yet Another Dialog)
+- [SBCL](https://www.sbcl.org/platform-table.html) -- (Common Lisp implementation); needed only for building from source
+- [Quicklisp](https://www.quicklisp.org/beta/) -- (A library manager for Common Lisp); needed only for building from source
 
 ### Building
 Clone the repository with:
@@ -51,11 +51,17 @@ delete an entry
 
 show all bookmarks and go to link in prefered browser
 
+`bkmks c[hg] <selected entry>`
+
+changes the current bookmark category you are in
+
+_(currently, you have to manually create the files yourself in `~/.config/bkmks/files/`. I'm still working on getting the add and delete categories functions to work properly with the config file. You can check it out in the 'testing' branch, if you want to play around with it.)_
+
 `bkmks [ls]`
 
-Configuration is done by directly editing the script.
+Configuration is done by editing the configuration file, located at `/home/user/.config/bkmks/`.
 
-If you would prefer to have your bookmarks stored in an alternate locatation, there are variables that can be changed for that. The default is `/home/user/.bkmks/urls`
+If you would prefer to have your bookmarks stored in an alternate locatation, there are variables that can be changed for that. The default is `/home/user/.config/bkmks/files/urls`
 
 
 ## Tips
@@ -75,3 +81,8 @@ static Key keys[] = {
 
 ```
 
+## Notes on progress
+
+Currently, I am working on refactoring the code to be a bit leaner and less redundant in some places.
+I'm having an issue with the config file updating properly in the testing branch, after I have added the `(bkmks-add-category)` and `(bkmks-del-category)` functions.
+The functions themselves work fine, but are dependent on the local loaded config global variable to be up to date with the current state of the config file (and subsequently the directory structure of the bookmarks files). Thus, they are not ready to be merged into the main branch quite yet.

@@ -41,3 +41,18 @@
   (cond ((null lst) nil)
         ((equal (car lst) ele) i)
         ((index-of (cdr lst) ele (1+ i)))))
+
+(defun get-file-lines (file)
+  (let ((lngth 0)) (with-open-file (stream file)
+     (loop for line = (read-line stream nil)
+           while line
+           do (setf lngth (1+ lngth))))
+    (format nil "~s" lngth)))
+
+(defun launch-dmenu (lngth file)
+  (string-trim '(#\NewLine) (uiop:run-program `("dmenu" "-l" ,lngth)
+                     :input file
+                     :output :string)))
+
+(defun launch-dmenu-prompt (prompt)
+  (string-trim '(#\NewLine) (uiop:run-program `("dmenu" "-l" "6" "-p" ,prompt) :output :string)))

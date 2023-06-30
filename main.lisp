@@ -95,7 +95,7 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
 (defun bkmks-del-category ()
   (let* ((category (nth 0 (bkmks-get-categories)))
         (index (getf *config* 'current-file))
-        (prompt (string-downcase (launch-dmenu-prompt "Are you sure? (y/N): "))))
+        (prompt (string-downcase (launch-dmenu-prompt (format nil "(Deleting: ~A) Are you sure? (y/N): " (pathname-name category))))))
     (if (null (find prompt '("y" "yes") :test #'string-equal))
         nil
         (progn
@@ -119,10 +119,15 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
 (defun main ()
   (check-config (load-config *config-path*))
   (update-config)
-  (cond ((not (null (find (nth 1 sb-ext:*posix-argv*) '("add" "a") :test #'string-equal)))
+  (cond
+    ((not (null (find (nth 1 sb-ext:*posix-argv*) '("add" "a") :test #'string-equal)))
          (bkmks-add))
+    ((not (null (find (nth 1 sb-ext:*posix-argv*) '("catadd" "cata" "ca") :test #'string-equal)))
+         (bkmks-add-category))
         ((not (null (find (nth 1 sb-ext:*posix-argv*) '("del" "d") :test #'string-equal)))
          (bkmks-del))
+        ((not (null (find (nth 1 sb-ext:*posix-argv*) '("catdel" "catd" "cd") :test #'string-equal)))
+         (bkmks-del-category))
         ((not (null (find (nth 1 sb-ext:*posix-argv*) '("chg" "c") :test #'string-equal)))
          (bkmks-change))
         ((not (null (find (nth 1 sb-ext:*posix-argv*) '("help" "h") :test #'string-equal)))

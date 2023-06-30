@@ -22,11 +22,21 @@
 (defun set-default-config ()
   (list 'menu "dmenu" 'browser "firefox" 'files `(,*url-full-path*) 'current-file 0))
 
+;(defun update-config ()
+  ;(setf *url-file-path-list*  (directory (merge-pathnames *url-file-path* "*")))
+  ;(setf *files* (getf *config* 'files))
+  ;(setf *file-state* (getf *config* 'current-file))
+  ;(setf *current-file* (nth *file-state* *files*)))
+
 (defun update-config ()
-  (setf *url-file-path-list*  (directory (merge-pathnames *url-file-path* "*")))
-  (setf *files* (getf *config* 'files))
-  (setf *file-state* (getf *config* 'current-file))
-  (setf *current-file* (nth *file-state* *files*)))
+  (progn
+   (setf *config* (funcall *config-sync*))
+   (setf *url-file-path-list*  (directory (merge-pathnames *url-file-path* "*")))
+   (setf *browser* (getf *config* 'browser))
+   (setf *preferred-menu* (getf *config* 'menu))
+   (setf *files* (getf *config* 'files))
+   (setf *file-state* (getf *config* 'current-file))
+   (setf *current-file* (nth *file-state* *files*))))
 
 ;(defun update-config ()
   ;(setf *url-file-path-list*  (directory (merge-pathnames *url-file-path* "*")))

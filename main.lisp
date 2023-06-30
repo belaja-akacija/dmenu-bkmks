@@ -48,7 +48,6 @@ bkms: unix bookmark management that sucks less. Lisp edition!
 
 
 (defun bkmks-display ()
-  ;; This is currently seeming quite messy and bulky
   (bkmks-check)
   (let ((bkmks-length  (get-file-lines *current-file*))
         (raw-entry "")

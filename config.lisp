@@ -15,36 +15,23 @@
 
 (defun set-config! (plist key val)
   (setf (getf plist key) val)
-  (overwrite-file! *config-path* plist :type :data)
-  (setf *config* (load-config *config-path*))
-  (update-config))
+  (overwrite-file! *config-path* plist :type :data))
 
 (defun set-default-config ()
   (list 'menu "dmenu" 'browser "firefox" 'files `(,*url-full-path*) 'current-file 0))
 
-;(defun update-config ()
-  ;(setf *url-file-path-list*  (directory (merge-pathnames *url-file-path* "*")))
-  ;(setf *files* (getf *config* 'files))
-  ;(setf *file-state* (getf *config* 'current-file))
-  ;(setf *current-file* (nth *file-state* *files*)))
+(defun sync-configuration ()
+  (let ((config '()))
+    (lambda ()
+      (setf *url-file-path-list* (directory (merge-pathnames *url-file-path* "*")))
+
+      (set-config! *config* 'files *url-file-path-list*)
+      (setf config (modest-config:load-config *config-path*))
+      config
+      )))
 
 (defun update-config ()
-  (progn
-   (setf *config* (funcall *config-sync*))
-   (setf *url-file-path-list*  (directory (merge-pathnames *url-file-path* "*")))
-   (setf *browser* (getf *config* 'browser))
-   (setf *preferred-menu* (getf *config* 'menu))
-   (setf *files* (getf *config* 'files))
-   (setf *file-state* (getf *config* 'current-file))
-   (setf *current-file* (nth *file-state* *files*))))
-
-;(defun update-config ()
-  ;(setf *url-file-path-list*  (directory (merge-pathnames *url-file-path* "*")))
-  ;(set-config! *config* 'files *url-file-path-list*)
-  ;(setf (getf *config* 'files) *url-file-path-list*)
-  ;(setf *files* (getf *config* 'files))
-  ;(setf *config* (load-config *config-path*))
-  ;(setf *browser* (getf *config* 'browser))
-  ;(setf *preferred-menu* (getf *config* 'menu))
-  ;(setf *file-state* (getf *config* 'current-file))
-  ;(setf *current-file* (nth *file-state* *files*)))
+  (let ((config-sync (sync-configuration)))
+    (progn
+     (setf *config* (funcall config-sync))
+     (set-config! *config* 'files *url-file-path-list*))))

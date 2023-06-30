@@ -23,12 +23,16 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
            delete an entry
          bkmks c[hg] <selected entry>
            change current bookmark category
+         bkmks cata[dd] <selected entry>
+           adds a new category
+         bkmks catd[el] <selected entry>
+           deletes a category
          bkmks [ls]
            show all bookmarks and go to link in prefered browser
 
-           Configuration is done by editing the configuration file, located at /home/user/.config/bkmks/
+       Configuration is done by editing the configuration file, located at /home/user/.config/bkmks/
 
-           If you would prefer to have your bookmarks stored in an alternate location, there are also variables that can be changed for that. The default is /home/user/.config/bkmks/files/urls~%")))
+       If you would prefer to have your bookmarks stored in an alternate location, there are also variables that can be changed for that. The default is /home/user/.config/bkmks/files/urls~%")))
 
 (defun bkmks-get-categories ()
   (update-config)
@@ -121,17 +125,17 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
   (update-config)
   (cond
     ((find (nth 1 sb-ext:*posix-argv*) '("add" "a") :test #'string-equal)
-    (bkmks-add))
+     (bkmks-add))
     ((find (nth 1 sb-ext:*posix-argv*) '("catadd" "cata" "ca") :test #'string-equal)
-    (bkmks-add-category))
+     (bkmks-add-category))
     ((find (nth 1 sb-ext:*posix-argv*) '("del" "d") :test #'string-equal)
-    (bkmks-del))
+     (bkmks-del))
     ((find (nth 1 sb-ext:*posix-argv*) '("catdel" "catd" "cd") :test #'string-equal)
-    (bkmks-del-category))
+     (bkmks-del-category))
     ((find (nth 1 sb-ext:*posix-argv*) '("chg" "c") :test #'string-equal)
-    (bkmks-change))
+     (bkmks-change))
     ((find (nth 1 sb-ext:*posix-argv*) '("help" "h") :test #'string-equal)
-    (show-usage))
+     (show-usage))
     ((find (nth 1 sb-ext:*posix-argv*) '("nil" "ls") :test #'string-equal)
-    (bkmks-send))
+     (bkmks-send))
     (t (show-usage))))

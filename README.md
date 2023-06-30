@@ -55,7 +55,13 @@ show all bookmarks and go to link in prefered browser
 
 changes the current bookmark category you are in
 
-_(currently, you have to manually create the files yourself in `~/.config/bkmks/files/`. I'm still working on getting the add and delete categories functions to work properly with the config file. You can check it out in the 'testing' branch, if you want to play around with it.)_
+`bkmks cata[dd] <selected entry>`
+
+adds a new category
+
+`bkmks catd[el] <selected entry>`
+
+deletes a category
 
 `bkmks [ls]`
 
@@ -83,6 +89,6 @@ static Key keys[] = {
 
 ## Notes on progress
 
-Currently, I am working on refactoring the code to be a bit leaner and less redundant in some places.
+✓ Resolved! -- Currently, I am working on refactoring the code to be a bit leaner and less redundant in some places.
 I'm having an issue with the config file updating properly in the testing branch, after I have added the `(bkmks-add-category)` and `(bkmks-del-category)` functions.
 The functions themselves work fine, but are dependent on the local loaded config global variable to be up to date with the current state of the config file (and subsequently the directory structure of the bookmarks files). Thus, they are not ready to be merged into the main branch quite yet.

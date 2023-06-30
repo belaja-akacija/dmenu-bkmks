@@ -50,7 +50,6 @@
            do (setf lngth (1+ lngth))))
     (format nil "~s" lngth)))
 
-<<<<<<< HEAD
 (defun launch-dmenu (lngth file &optional label)
   (string-trim '(#\NewLine) (uiop:run-program `("dmenu" "-l" ,lngth "-p" ,label)
                      :input file
@@ -59,12 +58,3 @@
 
 (defun launch-dmenu-prompt (prompt)
   (string-trim '(#\NewLine) (uiop:run-program `("dmenu" "-l" "6" "-p" ,prompt) :output :string :ignore-error-status nil)))
-=======
-(defun launch-dmenu (lngth file)
-  (string-trim '(#\NewLine) (uiop:run-program `("dmenu" "-l" ,lngth)
-                     :input file
-                     :output :string)))
-
-(defun launch-dmenu-prompt (prompt)
-  (string-trim '(#\NewLine) (uiop:run-program `("dmenu" "-l" "6" "-p" ,prompt) :output :string)))
->>>>>>> testing

@@ -15,7 +15,7 @@ load-test:
 build:
 	$(LISP) --eval "(asdf:load-asd #P\"$(ASD_PATH)\")" \
 		--eval '(ql:quickload :bkmks)' \
-		--eval "(sb-ext:save-lisp-and-die #P\"$(BINARY)\" :toplevel #'main :executable t)" \
+		--eval "(sb-ext:save-lisp-and-die #P\"$(BINARY)\" :toplevel #'main :executable t :compression t)" \
 		--eval '(quit)'
 
 install:

@@ -27,7 +27,7 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
 
            Configuration is done by editing the configuration file, located at /home/user/.config/bkmks/
 
-           If you would prefer to have your bookmarks stored in an alternate locatation, there are also variables that can be changed for that. The default is /home/user/.config/bkmks/files/urls~%")))
+           If you would prefer to have your bookmarks stored in an alternate location, there are also variables that can be changed for that. The default is /home/user/.config/bkmks/files/urls~%")))
 
 (defun bkmks-get-categories ()
   (update-config)
@@ -86,6 +86,7 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
   (uiop:run-program `(,*browser* ,entry))))
 
 (defun main ()
+  (check-config (load-config *config-path*))
   (update-config)
   (cond ((not (null (find (nth 1 sb-ext:*posix-argv*) '("add" "a") :test #'string-equal)))
          (bkmks-add))

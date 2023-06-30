@@ -12,5 +12,5 @@
   :in-order-to ((test-op (test-op "bkmks/tests"))))
 
 (defsystem "bkmks/tests"
-  :depends-on ("bkmks" "modest-config")
+  :depends-on ("bkmks" "fiveam")
   :components ((:file "tests/bkmks-tests")))

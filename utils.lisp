@@ -29,6 +29,7 @@
                         (uiop:launch-program `("echo" ,dialog) :output :stream))
                       :output :string)))
 
+;; TODO rename this function everywhere
 (defun append->file (url desc path)
   (with-open-file (output path :direction :output
                           :if-exists :append :if-does-not-exist :create)
@@ -49,6 +50,7 @@
            do (setf lngth (1+ lngth))))
     (format nil "~s" lngth)))
 
+<<<<<<< HEAD
 (defun launch-dmenu (lngth file &optional label)
   (string-trim '(#\NewLine) (uiop:run-program `("dmenu" "-l" ,lngth "-p" ,label)
                      :input file
@@ -57,3 +59,12 @@
 
 (defun launch-dmenu-prompt (prompt)
   (string-trim '(#\NewLine) (uiop:run-program `("dmenu" "-l" "6" "-p" ,prompt) :output :string :ignore-error-status nil)))
+=======
+(defun launch-dmenu (lngth file)
+  (string-trim '(#\NewLine) (uiop:run-program `("dmenu" "-l" ,lngth)
+                     :input file
+                     :output :string)))
+
+(defun launch-dmenu-prompt (prompt)
+  (string-trim '(#\NewLine) (uiop:run-program `("dmenu" "-l" "6" "-p" ,prompt) :output :string)))
+>>>>>>> testing

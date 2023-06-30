@@ -15,8 +15,7 @@
 
 (defun set-config! (plist key val)
   (setf (getf plist key) val)
-  (overwrite-file! *config-path* plist :type :data)
-  (update-config))
+  (overwrite-file! *config-path* plist :type :data))
 
 (defun check-config (config)
   ;; should a dialog box come up instead so the user can fix the error themselves?
@@ -39,27 +38,18 @@
 (defun set-default-config ()
   (list 'menu "dmenu" 'browser "firefox" 'files `(,*url-full-path*) 'current-file 0))
 
-(defun config-syncer-test ()
+(defun sync-configuration ()
   (let ((config '()))
     (lambda ()
-      (setf config (modest-config:load-config *config-path*)))))
-(defparameter *config-sync* (config-syncer-test))
+      (setf *url-file-path-list* (directory (merge-pathnames *url-file-path* "*")))
+
+      (set-config! *config* 'files *url-file-path-list*)
+      (setf config (modest-config:load-config *config-path*))
+      config
+      )))
 
 (defun update-config ()
-  (progn
-   (setf *config* (funcall *config-sync*))
-   (setf *url-file-path-list*  (directory (merge-pathnames *url-file-path* "*")))
-   (setf *browser* (getf *config* 'browser))
-   (setf *preferred-menu* (getf *config* 'menu))
-   (setf *files* (getf *config* 'files))
-   (setf *file-state* (getf *config* 'current-file))
-   (setf *current-file* (nth *file-state* *files*))))
-
-;(defun update-config ()
-;(setf *url-file-path-list*  (directory (merge-pathnames *url-file-path* "*")))
-;(setf *config* (load-config *config-path*))
-;(setf *browser* (getf *config* 'browser))
-;(setf *preferred-menu* (getf *config* 'menu))
-;(setf *files* (getf *config* 'files))
-;(setf *file-state* (getf *config* 'current-file))
-;(setf *current-file* (nth *file-state* *files*)))
+  (let ((config-sync (sync-configuration)))
+    (progn
+     (setf *config* (funcall config-sync))
+     (set-config! *config* 'files *url-file-path-list*))))

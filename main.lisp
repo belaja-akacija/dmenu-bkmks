@@ -10,6 +10,7 @@
 (defparameter *file-state* (getf *config* 'current-file))
 (defparameter *current-file* (nth *file-state* *files*))
 
+;; TODO update the help
 (defun show-usage ()
   (show-dialog (format nil "
 bkmks: unix bookmark management that sucks less. Lisp edition!
@@ -47,26 +48,35 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
          (show-dialog (format nil "Error: No bookmarks found to display. Try adding some!~%~%")))
         (t (format nil "Everything OK."))))
 
-(defun bkmks-display ()
+(defun bkmks-get-categories ()
   (update-config)
-  ;; This is currently seeming quite messy and bulky
-  ;(bkmks-check)
+  (let* ((files (get-directory-files *url-file-path-list*))
+         (files-length (format nil "~s" (length *url-file-path-list*)))
+         (tmp #P "/tmp/bkmks-change.tmp")
+         (raw-entry "")
+         (filtered-entry ""))
+    (overwrite-file! tmp (format nil "~{~A~%~}" files))
+    (setq raw-entry (launch-dmenu files-length tmp))
+    (setq filtered-entry (merge-pathnames *url-file-path* (pathname raw-entry)))
+    `(,filtered-entry ,raw-entry)))
+
+
+(defun bkmks-display ()
+  (bkmks-check)
   (let ((bkmks-length  (get-file-lines *current-file*))
         (raw-entry "")
-        (filtered-entry "")
-        (current-file (pathname-name *current-file*)))
-    (setq raw-entry (launch-dmenu bkmks-length *current-file* current-file))
+        (filtered-entry ""))
+    (setq raw-entry (launch-dmenu bkmks-length *current-file*))
+    (format nil "~a" bkmks-length)
     (setq filtered-entry (cl-ppcre:scan-to-strings "(?<=\\|\\s).\+" (string-trim '(#\NewLine) raw-entry)))
     `(,filtered-entry ,(string-trim '(#\NewLine) raw-entry))))
 
 (defun bkmks-add ()
-  (update-config)
   (let ((desc ""))
     (if (null (nth 2 sb-ext:*posix-argv*))
         (show-dialog (format nil "Error: url must be provided.~%~%") :justify "center")
         (progn
           (setq desc (launch-dmenu-prompt "Description: "))
-          ;(print desc)
           (append->file (nth 2 sb-ext:*posix-argv*) (string-trim '(#\NewLine) desc) *current-file*)))))
 
 (defun bkmks-del ()
@@ -81,9 +91,29 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
     (set-config! *config* 'current-file (index-of *url-file-path-list* category 0))
     (bkmks-send)))
 
+(defun bkmks-del-category ()
+  (let* ((category (nth 0 (bkmks-get-categories)))
+        (index (getf *config* 'current-file))
+        (prompt (string-downcase (launch-dmenu-prompt "Are you sure? (y/N): "))))
+    (if (null (find prompt '("y" "yes") :test #'string-equal))
+        nil
+        (progn
+          (set-config! *config* 'current-file (if (equal index 0) 0
+                                                  (1- index)))
+          (delete-file category)))
+    (update-config)))
+
+(defun bkmks-add-category ()
+  (let* ((category-name (launch-dmenu-prompt "Enter category name: "))
+         (category-file (merge-pathnames *url-file-path* (pathname category-name))))
+    (if (probe-file category-file)
+        (show-dialog (format nil "This category already exists."))
+        (overwrite-file! category-file ""))
+    (update-config)))
+
 (defun bkmks-send ()
   (let ((entry (nth 0 (bkmks-display))))
-  (uiop:run-program `(,*browser* ,entry))))
+    (uiop:run-program `(,*browser* ,entry))))
 
 (defun main ()
   (check-config (load-config *config-path*))

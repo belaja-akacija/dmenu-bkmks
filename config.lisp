@@ -53,8 +53,7 @@
    (setf *preferred-menu* (getf *config* 'menu))
    (setf *files* (getf *config* 'files))
    (setf *file-state* (getf *config* 'current-file))
-   (setf *current-file* (nth *file-state* *files*)))
-  )
+   (setf *current-file* (nth *file-state* *files*))))
 
 ;(defun update-config ()
 ;(setf *url-file-path-list*  (directory (merge-pathnames *url-file-path* "*")))

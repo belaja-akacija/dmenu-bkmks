@@ -30,7 +30,7 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
            If you would prefer to have your bookmarks stored in an alternate locatation, there are also variables that can be changed for that. The default is /home/user/.config/bkmks/files/urls~%")))
 
 (defun bkmks-get-categories ()
-  (update-config)
+  ;(update-config)
   (let* ((files (get-directory-files *url-file-path-list*))
          (files-length (format nil "~s" (length *url-file-path-list*)))
          (tmp #P "/tmp/bkmks-change.tmp")
@@ -48,7 +48,7 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
         (t (format nil "Everything OK."))))
 
 (defun bkmks-display ()
-  (update-config)
+  ;(update-config)
   ;; This is currently seeming quite messy and bulky
   ;(bkmks-check)
   (let ((bkmks-length  (get-file-lines *current-file*))
@@ -60,7 +60,7 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
     `(,filtered-entry ,(string-trim '(#\NewLine) raw-entry))))
 
 (defun bkmks-add ()
-  (update-config)
+  ;(update-config)
   (let ((desc ""))
     (if (null (nth 2 sb-ext:*posix-argv*))
         (show-dialog (format nil "Error: url must be provided.~%~%") :justify "center")
@@ -76,7 +76,7 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
     (overwrite-file! *current-file* removed-lines)))
 
  (defun bkmks-change ()
-  (update-config)
+  ;(update-config)
   (let ((category (nth 0 (bkmks-get-categories))))
     (set-config! *config* 'current-file (index-of *url-file-path-list* category 0))
     (bkmks-send)))
@@ -86,7 +86,8 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
   (uiop:run-program `(,*browser* ,entry))))
 
 (defun main ()
-  (update-config)
+  (update-globals)
+  ;(update-config)
   (cond ((not (null (find (nth 1 sb-ext:*posix-argv*) '("add" "a") :test #'string-equal)))
          (bkmks-add))
         ((not (null (find (nth 1 sb-ext:*posix-argv*) '("del" "d") :test #'string-equal)))

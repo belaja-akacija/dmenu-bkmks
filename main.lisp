@@ -4,11 +4,11 @@
 ;;; - Fix the need to put double quotes for certain links, when adding new entries
 
 (defparameter *config* (load-config *config-path*))
-(defparameter *browser* (getf *config* 'browser))
-(defparameter *preferred-menu* (getf *config* 'menu))
-(defparameter *files* (getf *config* 'files))
-(defparameter *file-state* (getf *config* 'current-file))
-(defparameter *current-file* (nth *file-state* *files*))
+(defparameter *browser* "")
+(defparameter *preferred-menu* "")
+(defparameter *files* "")
+(defparameter *file-state* "")
+(defparameter *current-file* "")
 
 ;; TODO update the help
 (defun show-usage ()
@@ -34,26 +34,16 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
 
        If you would prefer to have your bookmarks stored in an alternate location, there are also variables that can be changed for that. The default is /home/user/.config/bkmks/files/urls~%")))
 
-(defun bkmks-get-categories ()
-  ;(update-config)
-  (let* ((files (get-directory-files *url-file-path-list*))
-         (files-length (format nil "~s" (length *url-file-path-list*)))
-         (tmp #P "/tmp/bkmks-change.tmp")
-         (raw-entry "")
-         (filtered-entry ""))
-    (overwrite-file! tmp (format nil "~{~A~%~}" files))
-    (setq raw-entry (launch-dmenu files-length tmp))
-    (setq filtered-entry (merge-pathnames *url-file-path* (pathname raw-entry)))
-    `(,filtered-entry ,raw-entry)))
-
 (defun bkmks-check ()
+  (update-globals)
   (ensure-directories-exist *url-file-path*)
   (cond ((null (probe-file *current-file*))
          (show-dialog (format nil "Error: No bookmarks found to display. Try adding some!~%~%")))
         (t (format nil "Everything OK."))))
 
 (defun bkmks-get-categories ()
-  (update-config)
+  (update-categories)
+  (update-globals)
   (let* ((files (get-directory-files *url-file-path-list*))
          (files-length (format nil "~s" (length *url-file-path-list*)))
          (tmp #P "/tmp/bkmks-change.tmp")
@@ -65,8 +55,8 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
     `(,filtered-entry ,raw-entry)))
 
 
-(defun bkmks-display ()
-  ;(update-config)
+(defun bkmks-display-bkmks ()
+  (update-globals)
   (let ((bkmks-length  (get-file-lines *current-file*))
         (raw-entry "")
         (filtered-entry "")
@@ -77,7 +67,7 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
     `(,filtered-entry ,(string-trim '(#\NewLine) raw-entry))))
 
 (defun bkmks-add ()
-  ;(update-config)
+  (update-globals)
   (let ((desc ""))
     (if (null (nth 2 sb-ext:*posix-argv*))
         (show-dialog (format nil "Error: url must be provided.~%~%") :justify "center")
@@ -87,12 +77,11 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
 
 (defun bkmks-del ()
   (bkmks-check)
-  (let* ((entry (nth 1 (bkmks-display)))
+  (let* ((entry (nth 1 (bkmks-display-bkmks)))
          (removed-lines (remove-lines *current-file* entry)))
     (overwrite-file! *current-file* removed-lines)))
 
  (defun bkmks-change ()
-  ;(update-config)
   (let ((category (nth 0 (bkmks-get-categories))))
     (set-config! *config* 'current-file (index-of *url-file-path-list* category 0))
     (bkmks-send)))
@@ -107,7 +96,7 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
           (set-config! *config* 'current-file (if (equal index 0) 0
                                                   (1- index)))
           (delete-file category)))
-    (update-config)))
+    (update-globals)))
 
 (defun bkmks-add-category ()
   (let* ((category-name (launch-dmenu-prompt "Enter category name: "))
@@ -115,10 +104,10 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
     (if (probe-file category-file)
         (show-dialog (format nil "This category already exists."))
         (overwrite-file! category-file ""))
-    (update-config)))
+    (update-globals)))
 
 (defun bkmks-send ()
-  (let ((entry (nth 0 (bkmks-display))))
+  (let ((entry (nth 0 (bkmks-display-bkmks))))
     (uiop:run-program `(,*browser* ,entry))))
 
 (defun main ()

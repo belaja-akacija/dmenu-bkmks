@@ -36,28 +36,19 @@
         (t (format t "nothing to do"))))
 
 (defun set-default-config ()
-  (list 'menu "dmenu" 'browser "firefox" 'files `(,*url-full-path*) 'current-file 0))
+  `(menu "dmenu" browser "firefox" files ,*url-file-path-list* current-file 0))
 
-(defun sync-configuration ()
-  (let ((config '()))
-    (lambda ()
-      (setf *url-file-path-list* (directory (merge-pathnames *url-file-path* "*")))
-
-      (set-config! *config* 'files *url-file-path-list*)
-      (setf config (modest-config:load-config *config-path*))
-      config
-      )))
+(defun update-categories ()
+  (let ((config (load-config *config-path*))
+        (files (directory (merge-pathnames *url-file-path* "*"))))
+        (set-config! config 'files files)))
 
 (defun update-globals ()
   (let ((config (load-config *config-path*)))
+    (setf *config* config)
     (setf *browser* (getf config 'browser))
     (setf *preferred-menu* (getf config 'menu))
     (setf *files* (getf config 'files))
     (setf *file-state* (getf config 'current-file))
-    (setf *current-file* (nth *file-state* *files*))))
-
-(defun update-config ()
-  (let ((config-sync (sync-configuration)))
-    (progn
-     (setf *config* (funcall config-sync))
-     (set-config! *config* 'files *url-file-path-list*))))
+    (setf *current-file* (nth *file-state* *files*))
+    (setf *url-file-path-list*  (directory (merge-pathnames *url-file-path* "*")))))

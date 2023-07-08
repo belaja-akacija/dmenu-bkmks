@@ -6,8 +6,9 @@ INSTALL_PATH := ~/.local/bin
 
 load:
 	rlwrap -c $(LISP) --eval "(asdf:load-asd #P\"$(ASD_PATH)\")" \
-		--eval '(ql:quickload :$(BINARY))' \
-		--eval '(if (cl-ppcre:all-matches "Vlime" (format nil "~A" (swank:list-threads))) 0 (vlime:main))'
+		--eval '(ql:quickload :$(BINARY))'
+		#--eval '(ql:quickload :$(BINARY))' \
+		#--eval '(if (cl-ppcre:all-matches "Vlime" (format nil "~A" (swank:list-threads))) 0 (vlime:main))'
 
 load-test:
 	rlwrap -c $(LISP) --eval "(asdf:load-asd #P\"$(ASD_PATH)\")" \

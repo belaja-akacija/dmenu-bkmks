@@ -4,7 +4,7 @@ _A simple dmenu script that helps you manage your bookmarks in a way that sucks 
 ## Installation
 ### Dependencies:
 - [dmenu](https://tools.suckless.org/dmenu/) -- (Dynamic menu for X)
-- [yad](https://github.com/v1cont/yad) -- (Yet Another Dialog)
+- [yad](https://github.com/v1cont/yad) -- (Yet Another Dialog); Used for help menu and error dialogs
 - [SBCL](https://www.sbcl.org/platform-table.html) -- (Common Lisp implementation); needed only for building from source
 - [Quicklisp](https://www.quicklisp.org/beta/) -- (A library manager for Common Lisp); needed only for building from source
 
@@ -65,7 +65,8 @@ deletes a category
 
 `bkmks [ls]`
 
-Configuration is done by editing the configuration file, located at `/home/user/.config/bkmks/`.
+__Configuration is done by editing the configuration file, located at `/home/user/.config/bkmks/`.__
+__*NOTE: In the current version, only dmenu is supported, but in future releases, will support rofi and fzf.*__
 
 If you would prefer to have your bookmarks stored in an alternate locatation, there are variables that can be changed for that. The default is `/home/user/.config/bkmks/files/urls`
 

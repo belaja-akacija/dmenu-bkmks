@@ -48,6 +48,14 @@
       config
       )))
 
+(defun update-globals ()
+  (let ((config (load-config *config-path*)))
+    (setf *browser* (getf config 'browser))
+    (setf *preferred-menu* (getf config 'menu))
+    (setf *files* (getf config 'files))
+    (setf *file-state* (getf config 'current-file))
+    (setf *current-file* (nth *file-state* *files*))))
+
 (defun update-config ()
   (let ((config-sync (sync-configuration)))
     (progn

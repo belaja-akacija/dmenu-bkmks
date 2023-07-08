@@ -2,7 +2,7 @@
   :description "bkms: unix bookmark management that sucks less. Lisp edition!"
   :version "0.5.2"
   :author "belaja-akacija"
-  :depends-on ("cl-ppcre" "modest-config")
+  :depends-on ("cl-ppcre" "modest-config" "vlime")
   :components ((:file "utils")
                (:file "config" :depends-on ("utils"))
                (:file "main" :depends-on ("utils" "config")))

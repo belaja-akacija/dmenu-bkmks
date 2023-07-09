@@ -51,4 +51,6 @@
     (setf *files* (getf config 'files))
     (setf *file-state* (getf config 'current-file))
     (setf *current-file* (nth *file-state* *files*))
-    (setf *url-file-path-list*  (directory (merge-pathnames *url-file-path* "*")))))
+    (setf *url-file-path-list*  (directory (merge-pathnames *url-file-path* "*")))
+    (setf *user-home* (namestring (user-homedir-pathname)))
+    (setf *config-path* (pathname (concatenate 'string *user-home* ".config/bkmks/config")))))

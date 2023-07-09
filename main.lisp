@@ -111,6 +111,7 @@ bkmks: unix bookmark management that sucks less. Lisp edition!
     (uiop:run-program `(,*browser* ,entry))))
 
 (defun main ()
+  (update-home)
   (update-globals)
   (cond
     ((find (nth 1 sb-ext:*posix-argv*) '("add" "a") :test #'string-equal)

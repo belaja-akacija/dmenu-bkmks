@@ -43,6 +43,13 @@
         (files (directory (merge-pathnames *url-file-path* "*"))))
         (set-config! config 'files files)))
 
+(defun update-home ()
+    (setf *user-home* (namestring (user-homedir-pathname)))
+    (setf *url-file-path*  (pathname (concatenate 'string *user-home*  ".config/bkmks/files/")))
+    (setf *url-full-path* (merge-pathnames *url-file-path* (pathname *url-file-name*)))
+    (setf *url-file-path-list*  (directory (merge-pathnames *url-file-path* "*")))
+    (setf *config-path* (pathname (concatenate 'string *user-home* ".config/bkmks/config"))))
+
 (defun update-globals ()
   (let ((config (load-config *config-path*)))
     (setf *config* config)
@@ -50,7 +57,4 @@
     (setf *preferred-menu* (getf config 'menu))
     (setf *files* (getf config 'files))
     (setf *file-state* (getf config 'current-file))
-    (setf *current-file* (nth *file-state* *files*))
-    (setf *url-file-path-list*  (directory (merge-pathnames *url-file-path* "*")))
-    (setf *user-home* (namestring (user-homedir-pathname)))
-    (setf *config-path* (pathname (concatenate 'string *user-home* ".config/bkmks/config")))))
+    (setf *current-file* (nth *file-state* *files*))))

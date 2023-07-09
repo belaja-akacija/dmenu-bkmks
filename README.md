@@ -1,4 +1,4 @@
-# bkmks-dmenu
+# dmenu-bkmks
 _A simple dmenu script that helps you manage your bookmarks in a way that sucks a bit less._
 
 ## Installation

@@ -15,26 +15,27 @@
 ;; TODO update the help
 (defun show-usage ()
   (show-dialog (format nil "
-                                    bkmks: unix bookmark management that sucks less. Lisp edition!
-                                    usage:
-                                    bkmks h[elp]
-                                    show this help message
-                                    bkmks a[dd] <url>
-                                    add a new bookmark
-                                    bkmks d[el] <selected entry>
-                                    delete an entry
-                                    bkmks c[hg] <selected entry>
-                                    change current bookmark category
-                                    bkmks cata[dd] <selected entry>
-                                    adds a new category
-                                    bkmks catd[el] <selected entry>
-                                    deletes a category
-                                    bkmks [ls]
-                                    show all bookmarks and go to link in prefered browser
+      bkmks: unix bookmark management that sucks less. Lisp edition!
 
-                                    Configuration is done by editing the configuration file, located at /home/user/.config/bkmks/
+      usage:
+        bkmks h[elp]
+      show this help message
+        bkmks a[dd] <url>
+      add a new bookmark
+        bkmks d[el] <selected entry>
+      delete an entry
+        bkmks c[hg] <selected entry>
+      change current bookmark category
+        bkmks cata[dd] <selected entry>
+      adds a new category
+        bkmks catd[el] <selected entry>
+      deletes a category
+        bkmks [ls]
+      show all bookmarks and go to link in prefered browser
 
-                                    If you would prefer to have your bookmarks stored in an alternate location, there are also variables that can be changed for that. The default is /home/user/.config/bkmks/files/urls~%")))
+      Configuration is done by editing the configuration file, located at /home/user/.config/bkmks/
+
+      If you would prefer to have your bookmarks stored in an alternate location, there are also variables that can be changed for that. The default is /home/user/.config/bkmks/files/urls~%")))
 
 (defun bkmks-check ()
   (update-globals)

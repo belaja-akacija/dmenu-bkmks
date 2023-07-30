@@ -76,7 +76,7 @@
   (update-globals)
   (let ((desc "")
         (link ""))
-    (setf link (launch-dmenu-prompt "Link: "))
+    (setf link (launch-dmenu-prompt "Link (paste w/ ctrl-y): "))
     (if (string= link "")
         (show-dialog (format nil "Error: url must be provided.~%~%") :justify "center")
         (progn

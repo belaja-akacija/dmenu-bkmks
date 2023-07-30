@@ -77,7 +77,7 @@
   (let ((desc "")
         (link ""))
     (setf link (launch-dmenu-prompt "Link: "))
-    (if (string= link "") ; this is the link
+    (if (string= link "")
         (show-dialog (format nil "Error: url must be provided.~%~%") :justify "center")
         (progn
           (setf desc (launch-dmenu-prompt "Description: "))

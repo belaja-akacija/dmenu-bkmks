@@ -3,11 +3,6 @@
 ;;; TODO
 ;;; - Fix the need to put double quotes for certain links, when adding new entries
 
-;; it has everything. The aur is fucking amazing
-;; dude that would be my dream
-;; even more so, I would want to do it with gentoo
-
-
 (defparameter *config* (load-config *config-path*))
 (defparameter *browser* "")
 (defparameter *preferred-menu* "")

@@ -3,6 +3,9 @@
 ;;; TODO
 ;;; - Fix the need to put double quotes for certain links, when adding new entries
 
+;; it has everything. The aur is fucking amazing
+;; dude that would be my dream
+;; even more so, I would want to do it with gentoo
 
 
 (defparameter *config* (load-config *config-path*))
@@ -71,12 +74,14 @@
 
 (defun bkmks-add ()
   (update-globals)
-  (let ((desc ""))
-    (if (null (nth 2 sb-ext:*posix-argv*))
+  (let ((desc "")
+        (link ""))
+    (setf link (launch-dmenu-prompt "Link: "))
+    (if (string= link "") ; this is the link
         (show-dialog (format nil "Error: url must be provided.~%~%") :justify "center")
         (progn
-          (setq desc (launch-dmenu-prompt "Description: "))
-          (append->file (nth 2 sb-ext:*posix-argv*) (string-trim '(#\NewLine) desc) *current-file*)))))
+          (setf desc (launch-dmenu-prompt "Description: "))
+          (append->file link (string-trim '(#\NewLine) desc) *current-file*)))))
 
 (defun bkmks-del ()
   (bkmks-check)

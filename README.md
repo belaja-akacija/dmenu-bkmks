@@ -51,6 +51,10 @@ delete an entry
 
 show all bookmarks and go to link in prefered browser
 
+`bkmks m[v] <selected entry>`
+
+moves an entry from one category to another
+
 `bkmks c[hg] <selected entry>`
 
 changes the current bookmark category you are in
@@ -78,12 +82,13 @@ If you use dwm or another tiling window manager, you might want to set a keybind
 Here is what I have in my `config.def.h` for dwm:
 ```
 static const char *bkmksls[]  = { "bkmks", NULL };
+static const char *bkmkschg[]  = { "bkmks", "c", NULL };
 
 static Key keys[] = {
 // ...
 	{ MODKEY|ShiftMask,             XK_b,      spawn,          {.v = bkmksls } },
-
-//..
+    { MODKEY|ShiftMask,             XK_c,      spawn,          {.v = bkmkschg } },
+// ...
 }
 
 ```

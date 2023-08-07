@@ -3,6 +3,8 @@
 ;;; TODO
 ;;; - Fix the need to put double quotes for certain links, when adding new entries
 ;;; - Make XDG compliant by putting the url files in ~/.local/share/bkmks/*
+;;; - Create a data definition for EntryList to make it clear how you should be
+;;;   passing the list as arguments to a function
 
 (defparameter *config* (load-config *config-path*))
 (defparameter *browser* "")
@@ -84,6 +86,7 @@
                (setf desc (launch-dmenu-prompt "Description: "))
                (append->file link (string-trim '(#\NewLine) desc) *current-file*)))))))
 
+;; TODO: make better variable names
 (defun bkmks-del (&optional cli-link cli-path)
   (bkmks-check)
   (let* ((entry nil)
@@ -134,7 +137,8 @@
     (update-globals)))
 
 (defun bkmks-send ()
-  (let ((entry (nth 0 (bkmks-display-bkmk *current-file*s))))
+  (update-globals)
+  (let ((entry (nth 0 (bkmks-display-bkmks *current-file*))))
     (uiop:run-program `(,*browser* ,entry))))
 
 (defun main ()

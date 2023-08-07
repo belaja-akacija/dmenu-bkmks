@@ -2,6 +2,7 @@
 
 ;;; TODO
 ;;; - Fix the need to put double quotes for certain links, when adding new entries
+;;; - Make XDG compliant by putting the url files in ~/.local/share/bkmks/*
 
 (defparameter *config* (load-config *config-path*))
 (defparameter *browser* "")
@@ -56,33 +57,54 @@
     `(,filtered-entry ,raw-entry)))
 
 
-(defun bkmks-display-bkmks ()
+(defun bkmks-display-bkmks (cat)
   (update-globals)
-  (let ((bkmks-length  (get-file-lines *current-file*))
+  (let ((bkmks-length  (get-file-lines cat))
         (raw-entry "")
         (filtered-entry "")
-        (current-file (pathname-name *current-file*)))
-    (setq raw-entry (launch-dmenu bkmks-length *current-file* current-file))
+        (current-file (pathname-name cat)))
+    (setq raw-entry (launch-dmenu bkmks-length cat current-file))
     (format nil "~a" bkmks-length)
     (setq filtered-entry (cl-ppcre:scan-to-strings "(?<=\\|\\s).\+" (string-trim '(#\NewLine) raw-entry)))
     `(,filtered-entry ,(string-trim '(#\NewLine) raw-entry))))
 
-(defun bkmks-add ()
+;;; TODO: refactor to not use so much progn
+(defun bkmks-add (&optional cli-link cli-path)
   (update-globals)
   (let ((desc "")
         (link ""))
-    (setf link (launch-dmenu-prompt "Link (paste w/ ctrl-y): "))
-    (if (string= link "")
-        (show-dialog (format nil "Error: url must be provided.~%~%") :justify "center")
-        (progn
-          (setf desc (launch-dmenu-prompt "Description: "))
-          (append->file link (string-trim '(#\NewLine) desc) *current-file*)))))
+    (if cli-link
+        (append->file (car cli-link) (car (filter-entry cli-link)) cli-path)
+        (progn (setf link (launch-dmenu-prompt "Link (paste w/ ctrl-y): "))
+         (if (string= link "")
+             (show-dialog (format nil "Error: url must be provided.~%~%") :justify "center")
+             (progn
+               (setf desc (launch-dmenu-prompt "Description: "))
+               (append->file link (string-trim '(#\NewLine) desc) *current-file*)))))))
 
-(defun bkmks-del ()
+(defun bkmks-del (&optional cli-link cli-path)
   (bkmks-check)
-  (let* ((entry (nth 1 (bkmks-display-bkmks)))
-         (removed-lines (remove-lines *current-file* entry)))
-    (overwrite-file! *current-file* removed-lines)))
+  (let* ((entry nil)
+         (cli-entry (nth 1 cli-link))
+         (removed-lines (remove-lines *current-file* entry))
+         (removed-lines-cli (remove-lines cli-path cli-entry)))
+    (if cli-link
+      (overwrite-file! cli-path removed-lines-cli)
+       (progn
+         (setf entry (nth 1 (bkmks-display-bkmks *current-file*)))
+         (overwrite-file! *current-file* removed-lines)))))
+
+;;; move an entry from one category to another
+
+(defun bkmks-move ()
+  (let ((from 0)
+        (to 0)
+        (from-file 0))
+    (setf from (bkmks-get-categories))
+    (setf to (bkmks-get-categories))
+    (setf from-file (bkmks-display-bkmks (car from)))
+    (bkmks-add from-file (car to))
+    (bkmks-del from-file (car from))))
 
  (defun bkmks-change ()
   (let ((category (nth 0 (bkmks-get-categories))))
@@ -110,7 +132,7 @@
     (update-globals)))
 
 (defun bkmks-send ()
-  (let ((entry (nth 0 (bkmks-display-bkmks))))
+  (let ((entry (nth 0 (bkmks-display-bkmk *current-file*s))))
     (uiop:run-program `(,*browser* ,entry))))
 
 (defun main ()
@@ -127,6 +149,8 @@
      (bkmks-del-category))
     ((find (nth 1 sb-ext:*posix-argv*) '("chg" "c") :test #'string-equal)
      (bkmks-change))
+    ((find (nth 1 sb-ext:*posix-argv*) '("mv" "m") :test #'string-equal)
+     (bkmks-move))
     ((find (nth 1 sb-ext:*posix-argv*) '("help" "h") :test #'string-equal)
      (show-usage))
     ((find (nth 1 sb-ext:*posix-argv*) '("nil" "ls") :test #'string-equal)

@@ -37,6 +37,13 @@
                         :output :string
                         :ignore-error-status t))))
 
+;; List->List
+;; Filters out all the atomic parts of an entry and spits back out a list of
+;; all the parts
+
+(defun filter-entry (entry)
+  (cl-ppcre:split "\\s\\|\\s" (cadr entry))) ;dummy
+
 ;; TODO rename this function everywhere
 (defun append->file (url desc path)
   (with-open-file (output path :direction :output

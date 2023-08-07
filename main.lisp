@@ -23,6 +23,8 @@
       add a new bookmark
         bkmks d[el] <selected entry>
       delete an entry
+        bkmks m[v] <selected entry>
+      move an entry from one category to another
         bkmks c[hg] <selected entry>
       change current bookmark category
         bkmks cata[dd] <selected entry>

@@ -137,6 +137,7 @@
     (update-globals)))
 
 (defun bkmks-send ()
+  "test commit"
   (update-globals)
   (let ((entry (nth 0 (bkmks-display-bkmks *current-file*))))
     (uiop:run-program `(,*browser* ,entry))))

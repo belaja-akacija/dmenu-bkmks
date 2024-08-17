@@ -72,21 +72,26 @@
     (setq filtered-entry (cl-ppcre:scan-to-strings "(?<=\\|\\s).\+" (string-trim '(#\NewLine) raw-entry)))
     `(,filtered-entry ,(string-trim '(#\NewLine) raw-entry))))
 
-;;; TODO: refactor to not use so much progn
-(defun bkmks-add (&optional cli-link cli-path)
+(defun bkmks-add ()
   (update-globals)
   (let ((desc "")
         (link ""))
-    (if cli-link
-        (append->file (car cli-link) (car (filter-entry cli-link)) cli-path)
-        (progn (setf link (launch-dmenu-prompt "Link (paste w/ ctrl-y): "))
-         (if (string= link "")
-             (show-dialog (format nil "Error: url must be provided.~%~%") :justify "center")
-             (progn
-               (setf desc (launch-dmenu-prompt "Description: "))
-               (append->file link (string-trim '(#\NewLine) desc) *current-file*)))))))
+    (setf link (launch-dmenu-prompt "Link (paste w/ ctrl-y): "))
+    (if (string= link "")
+        (show-dialog (format nil "Error: url must be provided.~%~%") :justify "center")
+        (progn
+          (setf desc (launch-dmenu-prompt "Description: "))
+          (append->file link (string-trim '(#\NewLine) desc) *current-file*)))))
+
+;; Needed an internal function to pass around indexes, but couldn't figure out
+;; how to make it general enough, so a separate function will have to do for
+;; now.
+
+(defun %bkmks-add (cli-link cli-path)
+  (append->file (car cli-link) (car (filter-entry cli-link)) cli-path))
 
 (defun bkmks-del ()
+  "Select and delete an entry in dmenu."
   (bkmks-check)
   (let* ((entry nil)
          (removed-lines nil))
@@ -95,19 +100,29 @@
       (setf removed-lines (remove-lines *current-file* entry))
       (overwrite-file! *current-file* removed-lines))))
 
-;;; move an entry from one category to another
+;; Needed an internal function to pass around indexes, but couldn't figure out
+;; how to make it general enough, so a separate function will have to do for
+;; now.
+
+(defun %bkmks-del (cli-link cli-path )
+  (let* ((cli-entry (nth 1 cli-link))
+         (removed-lines-cli (remove-lines cli-path cli-entry)))
+    (overwrite-file! cli-path removed-lines-cli)))
+
 
 (defun bkmks-move ()
+ "move an entry from one category to another"
   (let ((from 0)
         (to 0)
         (from-file 0))
-    (setf from (bkmks-get-categories))
-    (setf to (bkmks-get-categories))
-    (setf from-file (bkmks-display-bkmks (car from)))
-    (bkmks-add from-file (car to))
-    (bkmks-del from-file (car from))))
+    (progn
+      (setf from (bkmks-get-categories))
+      (setf to (bkmks-get-categories))
+      (setf from-file (bkmks-display-bkmks (car from)))
+      (%bkmks-add from-file (car to))
+      (%bkmks-del from-file (car from)))))
 
- (defun bkmks-change ()
+(defun bkmks-change ()
   (let ((category (nth 0 (bkmks-get-categories))))
     (set-config! *config* 'current-file (index-of *url-file-path-list* category 0))
     (bkmks-send)))

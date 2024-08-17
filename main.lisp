@@ -86,18 +86,14 @@
                (setf desc (launch-dmenu-prompt "Description: "))
                (append->file link (string-trim '(#\NewLine) desc) *current-file*)))))))
 
-;; TODO: make better variable names
-(defun bkmks-del (&optional cli-link cli-path)
+(defun bkmks-del ()
   (bkmks-check)
   (let* ((entry nil)
-         (cli-entry (nth 1 cli-link))
-         (removed-lines (remove-lines *current-file* entry))
-         (removed-lines-cli (remove-lines cli-path cli-entry)))
-    (if cli-link
-      (overwrite-file! cli-path removed-lines-cli)
-       (progn
-         (setf entry (nth 1 (bkmks-display-bkmks *current-file*)))
-         (overwrite-file! *current-file* removed-lines)))))
+         (removed-lines nil))
+    (progn
+      (setf entry (nth 1 (bkmks-display-bkmks *current-file*)))
+      (setf removed-lines (remove-lines *current-file* entry))
+      (overwrite-file! *current-file* removed-lines))))
 
 ;;; move an entry from one category to another
 
